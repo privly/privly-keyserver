@@ -1,0 +1,21 @@
+{
+  "author": "Austin King <shout@ozten.com> (http://ozten.com)",
+  "name": "browserid-cookbook-express",
+  "description": "Simplest Express app that uses BrowserID",
+  "version": "0.0.0",
+  "homepage": "http://github.com/mozilla/browserid-cookbook",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mozilla/browserid-cookbook.git"
+  },
+  "engines": {
+    "node": "~0.6.10"
+  },
+  "dependencies": {
+    "express": "3.2.x",
+    "jade": "0.31.x",
+    "browserid-verify": "0.1.x"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
+}

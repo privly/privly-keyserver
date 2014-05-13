@@ -1,0 +1,8 @@
+extends layout.jade
+
+block content
+  h1= title
+  if user
+    p Welcome, #{user}. Enjoy #{title}
+  else
+    p Please sign in to #{title}
