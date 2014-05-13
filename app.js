@@ -38,6 +38,7 @@ app.configure('production', function(){
 app.get('/', routes.index);
 app.post('/auth', routes.auth(AUDIENCE));
 app.get('/logout', routes.logout);
+app.get('/store', routes.store);
 
 var server = http.createServer(app);
 server.listen(PORT, function() {
