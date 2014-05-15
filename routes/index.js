@@ -2,7 +2,10 @@ var https = require('https'),
     verify = require('browserid-verify')(),
     validator = require('validator'),
     redis = require('redis'),
-    client = redis.createClient();
+    client = redis.createClient(),
+    jwcrypto = require("jwcrypto");
+  require("jwcrypto/lib/algs/ds");
+  require("jwcrypto/lib/algs/rs");
 /*
  * GET home page.
  */
@@ -41,11 +44,17 @@ exports.auth = function (audience){
       req.session.email = email;
 
       // extract email from bia
-      email_key = get_email_ia(req.body.assertion);
+      email_key = get_cert_ia(req.body.assertion);
 
       // Verify the extraction returned something
       if(!email_key){
         return resp.send(500, {status: 'Incorrect backed identity assertion'});
+      }
+
+      email_key = email_key.principal.email
+
+      if(!validator.isEmail(email_key)){
+        return resp.send(500, {status: 'Incorrect email from bia'});
       }
 
       client.get(email_key, function(err, reply){
@@ -163,7 +172,7 @@ exports.search = function (req, resp){
 }
 
 
-function get_email_ia(bia){
+function get_cert_ia(bia){
   // Begin breaking down the backed identity assertion in order to extract
   // the user certificate portion which will give the email address to be
   // used as the key in the key-value store.
@@ -194,14 +203,7 @@ function get_email_ia(bia){
   // Get the decoded cert into a useable form.
   cert = JSON.parse(cert)
 
-  // Get the email from the user certificate and do a format verification
-  if(!validator.isEmail(cert.principal.email)){
-    // Do something as this is an error
-    console.log('Email invalid');
-    return false;
-  }
-
-  return cert.principal.email;
+  return cert;
 }
 
 function which_store(data, key, value){
@@ -358,7 +360,32 @@ function verify_search_args(args){
     return 2;
   }
 
-
   console.log('Invalid key sent');
   return null;
+}
+
+function verify_sig(pgp_sig, bia){
+
+  var cert;
+  var bia_pub_key;
+
+  cert = get_cert_ia(bia);
+
+  if(!cert){
+    console.log('error getting user cert from bia');
+    return false;
+  }
+
+  bia_pub_key = cert.public-key;
+
+  bia_pub_key = jwcrypto.loadPublicKey(JSON.stringify(bia_pub_key));
+
+  jwcrypto.verify(pgp_sig, bia_pub_key, function(err, payload){
+    if(err){
+      console.log(err);
+    }
+
+    console.log(payload);
+    return true;
+  });
 }
