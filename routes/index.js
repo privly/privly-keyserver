@@ -364,7 +364,7 @@ function verify_search_args(args){
   return null;
 }
 
-function verify_sig(pgp_sig, bia){
+function verify_sig(pgp_sig, bia, callback){
 
   var cert;
   var bia_pub_key;
@@ -383,9 +383,10 @@ function verify_sig(pgp_sig, bia){
   jwcrypto.verify(pgp_sig, bia_pub_key, function(err, payload){
     if(err){
       console.log(err);
+      callback(err);
+    } else {
+      console.log(payload);
+      callback(true);
     }
-
-    console.log(payload);
-    return true;
   });
 }
