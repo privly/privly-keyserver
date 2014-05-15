@@ -17,6 +17,9 @@ exports.auth = function (audience){
     console.info('verifying with persona');
 
     var assertion = req.body.assertion;
+    var pgp_key;
+    var email_key;
+    var value;
 
     verify(assertion, audience, function(err, email, data){
       if (err) {
@@ -27,26 +30,49 @@ exports.auth = function (audience){
 
 
       // got a result, check if it was okay or not
-      if (email){
-        console.info('browserid auth successful, setting req.session.email');
-        req.session.email = email;
-        email_key = get_email_ia(req.body.assertion);
-        if(!email_key){
-          return resp.send(500, {status: 'Incorrect backed identity assertion'});
-        }
-        client.on("error", function (err) { // Check connection to key-value store
-          resp.send(500, {status: 'Redis server cannot be reachead'});
-        });
-        client.set(email_key, JSON.stringify({'bia': req.body.assertion}));
-        return resp.redirect('/');
+      if (!email) {
+
+        // request worked, but verfication didn't, return JSON
+        console.error(data.reason);
+        resp.send(403, data);
       }
 
-      // request worked, but verfication didn't, return JSON
-      console.error(data.reason);
-      resp.send(403, data)
+      console.info('browserid auth successful, setting req.session.email');
+      req.session.email = email;
+
+      // extract email from bia
+      email_key = get_email_ia(req.body.assertion);
+
+      // Verify the extraction returned something
+      if(!email_key){
+        return resp.send(500, {status: 'Incorrect backed identity assertion'});
+      }
+
+      client.get(email_key, function(err, reply){
+
+        // Get updated list of records
+        value = which_store(reply, 'bia', req.body.assertion);
+
+        if(!value){
+          console.log('Stored incorrect record');
+          return resp.send(500, {status: 'Server stored incorrect record'});
+        }
+
+        console.log('Storing under email');
+        client.set(email_key, JSON.stringify(value.data));
+
+        if(value.matched){
+
+          // store under pgp
+          console.log('Storing under pgp');
+          pgp_key = value.data[0]['pgp'];
+          client.set(pgp_key, JSON.stringify(value.data));
+        }
+      });
+
+      return resp.redirect('/');
     });
   };
-
 };
 
 exports.logout = function (req, resp){
@@ -55,30 +81,85 @@ exports.logout = function (req, resp){
 };
 
 exports.store = function (req, resp){
+  var email_key;
+  var pgp_key;
+  var value;
 
-  console.log(req.query);
-  var keys = 0;
-
-  // Make sure *ONLY* 'email' and 'pgp' are keys sent
-  for(var key in req.query){
-    keys++;
+  if(!verify_store_args(req.query)){
+    console.log('invalid query');
+    return resp.send(400, {status: 'invalid query'});
   }
 
-  if(keys > 2){
-    console.log('Invalid number of keys sent')
-    return resp.send(400, {status: 'Invalid store query'});
-  }
+  email_key = req.query.email;
+  pgp_key = req.query.pgp;
 
-  // Check if email key given as query
-  if(req.query.hasOwnProperty('email') && req.query.hasOwnProperty('pgp')){
-    // Check if only one value given for email key and one value for pgp
-    // Multiple values for email key has type of 'object' whereas
-    // a single value for email key has typeof 'string'
-    if(typeof req.query.email === 'string' && typeof req.query.pgp === 'string'){
-      return resp.send(200, {status: 'email and pgp sent!'});
+  // Get the list of records from key-value store
+  client.get(email_key, function(err, reply) {
+
+    // Update the list of records
+    value = which_store(reply, 'pgp', pgp_key);
+
+
+    if(!value){
+      return resp.send(500, {status: 'Stored ivnalid record'});
     }
+
+    // Store under email
+    console.log('storing under email: ' + email_key);
+    client.set(email_key, JSON.stringify(value.data));
+
+    // Check if we matched a pgp public key to bia
+    if(value.matched){
+
+      // Store under pgp
+      console.log('storing under pgp: ' + pgp_key);
+      client.set(pgp_key, JSON.stringify(value.data));
+    }
+    return resp.send(200, {status: 'records updated'});
+  });
+}
+
+exports.search = function (req, resp){
+  var key;
+  var verify;
+  var value;
+  var code;
+  var reason;
+
+  verify = verify_search_args(req.query);
+
+  if(verify == 1){
+    key = req.query.email;
+  } else if(verify == 2){
+    key = req.query.pgp;
+  } else {
+    return resp.send(400, {status: 'invalid query'});
   }
-  return resp.send(400, {status: 'Invalid store query'});
+
+  console.log(key);
+
+  client.get(key, function(err, reply){
+    if(!reply){
+      console.log('reply is null');
+      return resp.send(404, {status: 'key not found'});
+    }
+    value = JSON.parse(reply);
+    temp = value[0];
+
+    if(temp.hasOwnProperty('bia') && temp.hasOwnProperty('pgp')){
+      console.log('latest record is matched');
+      return resp.send(200, value);
+    }
+    // The record list from the key-value store should *never* have
+    // more than 1 record unmatched at any given time.
+    // If unmatched value in record, pop it from the list
+    value.shift();
+    if(value.length < 1){
+      return resp.send(404, {status: 'no matched recrod found'});
+    }
+
+    return resp.send(200, value);
+  });
 }
 
 
@@ -174,4 +255,110 @@ function which_store(data, key, value){
     }
   }
   return {'data': data, 'matched': matched};
+}
+
+function verify_store_args(args){
+
+  var keys = 0;
+  var email_eq;
+  var pgp_eq;
+
+  // Verify only 2 query keys were sent
+  for(var key in args){
+    keys++;
+  }
+
+  if(keys != 2){
+    console.log('Invalid number of keys sent');
+    return false;
+  }
+
+  if(!args.hasOwnProperty('email') || !args.hasOwnProperty('pgp')){
+    console.log('Missing either email key or pgp key');
+    return false;
+  }
+
+  // Check if only one value given for email key and one value for pgp
+  // Multiple values for email key has type of 'object' whereas
+  // a single value for email key has typeof 'string'. Same for pgp key
+  email_key = args.email;
+  pgp_key = args.pgp;
+
+  email_eq = typeof email_key === 'string';
+  pgp_eq = typeof pgp_key === 'string';
+
+  if(!email_eq || !pgp_eq){
+    console.log('More than one value for a key sent');
+    return  false;
+  }
+
+  // check email format validity
+  if(!validator.isEmail(args.email)){
+    console.log('invalid email');
+    return false;
+  }
+
+  // the store aguments are valid
+  return true;
+}
+
+function verify_search_args(args){
+  var keys = 0;
+  var email_key;
+  var email_eq;
+  var pgp_key;
+  var pgp_eq;
+
+  //
+  for(var key in args){
+    keys++;
+  }
+
+  if(keys != 1){
+    console.log('Invalid number of keys sent');
+    return false;
+  }
+
+  if(args.hasOwnProperty('email')){
+    console.log('Searching for email');
+
+    email_key = args.email;
+
+    // Check if only one value given for email key
+    // Multiple values for email key has type of 'object' whereas
+    // a single value for email key has typeof 'string'
+    email_eq = typeof args.email === 'string';
+
+    if(!email_eq){
+      console.log('More than one value sent for email key');
+      return false;
+    }
+
+    if(!validator.isEmail(email_key)){
+      console.log('Invalid email format');
+      return false;
+    }
+    return 1;
+  }
+
+  if(args.hasOwnProperty('pgp')){
+    console.log('Searching for pgp');
+
+    pgp_key = args.pgp;
+
+    // Check if only one value given for email key
+    // Multiple values for email key has type of 'object' whereas
+    // a single value for email key has typeof 'string'
+    pgp_eq = typeof args.pgp === 'string';
+
+    if(!pgp_eq){
+      console.log('More than one value sent for pgp key');
+      return false;
+    }
+    return 2;
+  }
+
+
+  console.log('Invalid key sent');
+  return null;
 }

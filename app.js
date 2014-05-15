@@ -39,6 +39,7 @@ app.get('/', routes.index);
 app.post('/auth', routes.auth(AUDIENCE));
 app.get('/logout', routes.logout);
 app.get('/store', routes.store);
+app.get('/search', routes.search);
 
 var server = http.createServer(app);
 server.listen(PORT, function() {
