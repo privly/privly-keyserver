@@ -374,20 +374,21 @@ function verify_sig(pgp_sig, bia, callback){
 
   if(!cert){
     console.log('error getting user cert from bia');
-    return false;
+    callback(false);
+  } else {
+
+    bia_pub_key = cert.public-key;
+
+    bia_pub_key = jwcrypto.loadPublicKey(JSON.stringify(bia_pub_key));
+
+    jwcrypto.verify(pgp_sig, bia_pub_key, function(err, payload){
+      if(err){
+        console.log(err);
+        callback(err);
+      } else {
+        console.log(payload);
+        callback(true);
+      }
+    });
   }
-
-  bia_pub_key = cert.public-key;
-
-  bia_pub_key = jwcrypto.loadPublicKey(JSON.stringify(bia_pub_key));
-
-  jwcrypto.verify(pgp_sig, bia_pub_key, function(err, payload){
-    if(err){
-      console.log(err);
-      callback(err);
-    } else {
-      console.log(payload);
-      callback(true);
-    }
-  });
 }
