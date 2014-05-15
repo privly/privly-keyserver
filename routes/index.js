@@ -207,13 +207,13 @@ function get_cert_ia(bia){
 }
 
 function which_store(data, key, value){
+  var to_store;
   var matched = false;
 
   if(!data){
     console.log('Email not found in storage, creating new record');
-    var to_store = {};
+    to_store = {};
     to_store[key] = value;
-
     data = [to_store];
   } else {
     console.log('Email found in storage');
@@ -227,7 +227,7 @@ function which_store(data, key, value){
         console.log('pgp key exists');
 
         console.log('matched record found, creating new record');
-        var to_store = {};
+        to_store = {};
         to_store[key] = value;
 
         data.unshift(to_store); // add to beginning of list
@@ -250,6 +250,7 @@ function which_store(data, key, value){
         } else {
           console.log('Overwriting unmatched pgp');
         }
+        data[0] = temp; // explicitly update the record to have new data
       } else {
         console.log('Server stored invalid data');
         return null;
