@@ -234,7 +234,7 @@ function which_store(data, key, value){
       } else {
         temp[key] = value;
         if(key == 'pgp'){
-          console.log('matching bia to pgp');
+          console.log('trying to match pgp to bia');
           matched = true;
         } else {
           console.log('Overwriting unmatched bia');
@@ -244,7 +244,7 @@ function which_store(data, key, value){
       console.log('key "bia" not found');
       if(temp.hasOwnProperty('pgp')){
         temp[key] = value;
-        if(temp.hasOwnProperty('bia')){
+        if(key == 'bia'){
           console.log('matching bia to pgp');
           matched = true;
         } else {
@@ -384,7 +384,7 @@ function verify_sig(pgp_sig, bia, callback){
     jwcrypto.verify(pgp_sig, bia_pub_key, function(err, payload){
       if(err){
         console.log(err);
-        callback(err);
+        callback(false);
       } else {
         console.log(payload);
         callback(true);
