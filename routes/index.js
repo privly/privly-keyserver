@@ -237,7 +237,7 @@ function which_store(data, key, value){
           console.log('matching bia to pgp');
           matched = true;
         } else {
-          console.log('Overwriting unmatched pgp');
+          console.log('Overwriting unmatched bia');
         }
       }
     } else {
