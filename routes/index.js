@@ -108,7 +108,6 @@ exports.store = function (req, resp){
     // Update the list of records
     value = which_store(reply, 'pgp', pgp_key);
 
-
     if(!value){
       return resp.send(500, {status: 'Stored ivnalid record'});
     }
@@ -234,7 +233,7 @@ function which_store(data, key, value){
       } else {
         temp[key] = value;
         if(key == 'pgp'){
-          console.log('trying to match pgp to bia');
+          console.log('Matched pgp to bia');
           matched = true;
         } else {
           console.log('Overwriting unmatched bia');
@@ -245,7 +244,7 @@ function which_store(data, key, value){
       if(temp.hasOwnProperty('pgp')){
         temp[key] = value;
         if(key == 'bia'){
-          console.log('matching bia to pgp');
+          console.log('Matched bia to pgp');
           matched = true;
         } else {
           console.log('Overwriting unmatched pgp');
@@ -377,7 +376,7 @@ function verify_sig(pgp_sig, bia, callback){
     callback(false);
   } else {
 
-    bia_pub_key = cert.public-key;
+    bia_pub_key = cert['public-key'];
 
     bia_pub_key = jwcrypto.loadPublicKey(JSON.stringify(bia_pub_key));
 
