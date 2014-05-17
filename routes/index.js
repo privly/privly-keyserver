@@ -23,6 +23,7 @@ exports.auth = function (audience){
     var pgp_key;
     var email_key;
     var value;
+    var bia;
 
     verify(assertion, audience, function(err, email, data){
       if (err) {
@@ -67,15 +68,28 @@ exports.auth = function (audience){
           return resp.send(500, {status: 'Server stored incorrect record'});
         }
 
-        console.log('Storing under email');
-        client.set(email_key, JSON.stringify(value.data));
-
         if(value.matched){
 
           // store under pgp
-          console.log('Storing under pgp');
+          console.log('Verifying pgp signature to bia pubkey');
           pgp_key = value.data[0]['pgp'];
-          client.set(pgp_key, JSON.stringify(value.data));
+          bia = value.data[0]['bia'];
+          verify_sig(pgp_key, bia, function(verified){
+            if(verified){
+              console.log('Signatured verified!');
+              console.log('Storing under pgp');
+              client.set(pgp_key, JSON.stringify(value.data));
+            } else {
+              console.log('pgp signature does not match bia pub key');
+              console.log('deleting offending pgp key');
+              delete value.data[0]['pgp'];
+              console.log('Storing under email');
+              client.set(email_key, JSON.stringify(value.data));
+            }
+          });
+        } else {
+          console.log('Storing under email');
+          client.set(email_key, JSON.stringify(value.data));
         }
       });
 
@@ -93,6 +107,7 @@ exports.store = function (req, resp){
   var email_key;
   var pgp_key;
   var value;
+  var bia;
 
   if(!verify_store_args(req.query)){
     console.log('invalid query');
@@ -112,18 +127,35 @@ exports.store = function (req, resp){
       return resp.send(500, {status: 'Stored ivnalid record'});
     }
 
-    // Store under email
-    console.log('storing under email: ' + email_key);
-    client.set(email_key, JSON.stringify(value.data));
-
     // Check if we matched a pgp public key to bia
     if(value.matched){
 
+      bia = value.data[0]['bia'];
+
       // Store under pgp
-      console.log('storing under pgp: ' + pgp_key);
-      client.set(pgp_key, JSON.stringify(value.data));
+      console.log('Verifying pgp signature to bia pubkey');
+      verify_sig(pgp_key, bia, function(verified){
+        if(verified){
+          console.log('Signatured verified!');
+          console.log('Storing under pgp');
+          client.set(pgp_key, JSON.stringify(value.data));
+          client.set(email_key, JSON.stringify(value.data));
+        } else {
+          console.log('pgp signature does not match bia pub key');
+          // delete the pgp key sing which_store will add it
+          delete value.data[0]['pgp'];
+          console.log('Storing under email');
+          client.set(email_key, JSON.stringify(value.data));
+        }
+        return resp.send(200, {status: 'records updated'});
+      });
+    } else {
+      // Store under email
+      console.log('storing under email');
+      client.set(email_key, JSON.stringify(value.data));
+      return resp.send(200, {status: 'records updated'});
     }
-    return resp.send(200, {status: 'records updated'});
+    //return resp.send(200, {status: 'records updated'});
   });
 }
 
