@@ -60,7 +60,7 @@ pgp=<signed pgp public key>
 CURL Example:
 
 ```bash
-curl -i -H "Accept: application/json" http://<dirp url>/store?email=bob@example.com&pgp=hffdjlkfg
+curl --request GET 'http://<dirp url>/store?email=bob@example.com&pgp=dsfdsfds'
 ```
 
 #### search
