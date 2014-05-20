@@ -1,3 +1,11 @@
+# Installation
+1. [Setup Redis](http://redis.io/topics/quickstart)
+1. Install ```node```
+1. git clone https://github.com/stumped2/express-directory-provider.git
+1. cd express-directory-provider/
+1. ```npm install```
+1. ```node app.js```
+
 # What is a Directory Provider?
 A Directory Provider (dirp) is a remote resource used for the Privly PGP
 application.
@@ -64,3 +72,5 @@ curl --request GET 'http://<dirp url>/store?email=bob@example.com&pgp=dsfdsfds'
 ```
 
 #### search
+
+http://etherpad.osuosl.org/privly
