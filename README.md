@@ -22,7 +22,7 @@ no actual logging in of the dirp, this step is only to generate the Persona
 cryptographic keypair as well as the Persona backed identity assertion).
 
 Once the user has logged in, the Persona Backed Identity Assertion (bia) is
-stored in the dirp's key-value store with the users's email from the bia being
+stored in the dirp's key-value store with the user's email from the bia being
 the key.
 
 #### Storage
@@ -74,3 +74,52 @@ curl --request GET 'http://<dirp url>/store?email=bob@example.com&pgp=dsfdsfds'
 #### search
 
 http://etherpad.osuosl.org/privly
+
+## Formats
+There are specific formats for data used in the dirp.
+
+#### Backed Identity Assertion
+This format is expected to [change](http://lloyd.io/evolving-browserid-data-formats/)
+at some point to better track JOSE.
+Use this link as a reference to change the functions for extracting the public
+key and email from the backed identity assertion.
+
+The overall format of a backed identity assertion is as follows:
+```<cert header>.<cert payload>.<cert signature>~<assertion header>.<assertion payload>.<assertion signature>```
+
+Each section of the bia is base64url encoded.
+
+The cert payload is where most of the information the dirp needs.
+The overall structure is as follows:
+
+```javascript
+{
+  "iss": .....,
+  "iat": .....,
+  "public-key": {
+    "y": ...,
+    "p": ...,
+    "g": ...,
+    "q": ...,
+    "algorithm": "DS"
+  },
+  "exp": ...,
+  "principal": {
+    "email": <email address you used to log in using persona>
+  }
+}
+```
+
+#### Directory Provider Records
+The Directory Provider will return the list of matched bia and pgp keys. It is
+an array of JSON objects, where the JSON object is a bia and a pgp key. If there
+are no matched bia to pgp keys, the dirp will not return anything. Here is an
+example:
+
+```javascript
+[
+  {"bia": <bia>, "pgp": <pgp key>},
+  {"bia": <bia>, "pgp": <pgp key>},
+  ....
+]
+```
