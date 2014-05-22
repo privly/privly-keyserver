@@ -27,8 +27,8 @@ the key.
 
 #### Storage
 The user then uploads their pgp public key (which has been signed by the user's
-private key that was generated from the persona log inon the user's computer) to
-the dirp using their email from the Persona log in as the identifier.
+private key that was generated from the persona log in on the user's computer)
+to the dirp using their email from the Persona log in as the identifier.
 
 #### Searching
 The user then searches the dirp (by email or pgp public key) for other Privly
