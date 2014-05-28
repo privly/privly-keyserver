@@ -20,5 +20,8 @@
     "jwcrypto": "0.5.0"
   },
   "devDependencies": {},
-  "optionalDependencies": {}
+  "optionalDependencies": {},
+  "scripts": {
+    "test": "make test"
+  }
 }
