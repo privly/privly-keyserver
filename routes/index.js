@@ -158,17 +158,14 @@ exports.store = function (req, resp){
 }
 
 exports.search = function (req, resp){
+
   var key;
-  var verify;
-  var value;
-  var code;
-  var reason;
 
-  verify = verify_search_args(req.query);
+  var verified = verify_search_args(req.query);
 
-  if(verify == 1){
+  if(verified == 1){
     key = req.query.email;
-  } else if(verify == 2){
+  } else if(verified == 2){
     key = req.query.pgp;
   } else {
     return resp.send(400, {status: 'invalid query'});
@@ -181,10 +178,9 @@ exports.search = function (req, resp){
       console.log('reply is null');
       return resp.send(404, {status: 'key not found'});
     }
-    value = JSON.parse(reply);
-    temp = value[0];
+    var value = JSON.parse(reply);
 
-    if(temp.hasOwnProperty('bia') && temp.hasOwnProperty('pgp')){
+    if(value[0].hasOwnProperty('bia') && value[0].hasOwnProperty('pgp')){
       console.log('latest record is matched');
       return resp.send(200, value);
     }
