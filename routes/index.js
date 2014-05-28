@@ -19,11 +19,9 @@ exports.auth = function (audience){
   return function(req, resp){
     console.info('verifying with persona');
 
+    console.log(req);
+
     var assertion = req.body.assertion;
-    var pgp_key;
-    var email_key;
-    var value;
-    var bia;
 
     verify(assertion, audience, function(err, email, data){
       if (err) {
@@ -45,14 +43,14 @@ exports.auth = function (audience){
       req.session.email = email;
 
       // extract email from bia
-      email_key = get_cert_ia(req.body.assertion);
+      var cert = get_cert_ia(req.body.assertion);
 
       // Verify the extraction returned something
-      if(!email_key){
+      if(!cert){
         return resp.send(500, {status: 'Incorrect backed identity assertion'});
       }
 
-      email_key = email_key.principal.email
+      var email_key = cert.principal.email
 
       if(!validator.isEmail(email_key)){
         return resp.send(500, {status: 'Incorrect email from bia'});
@@ -61,7 +59,7 @@ exports.auth = function (audience){
       client.get(email_key, function(err, reply){
 
         // Get updated list of records
-        value = which_store(reply, 'bia', req.body.assertion);
+        var value = which_store(reply, 'bia', req.body.assertion);
 
         if(!value){
           console.log('Stored incorrect record');
@@ -72,8 +70,8 @@ exports.auth = function (audience){
 
           // store under pgp
           console.log('Verifying pgp signature to bia pubkey');
-          pgp_key = value.data[0]['pgp'];
-          bia = value.data[0]['bia'];
+          var pgp_key = value.data[0]['pgp'];
+          var bia = value.data[0]['bia'];
           verify_sig(pgp_key, bia, function(verified){
             if(verified){
               console.log('Signatured verified!');
