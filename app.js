@@ -3,8 +3,13 @@
  */
 
 var http = require('http');
-var express = require('express'),
-    routes = require('./routes');
+var express = require('express');
+    index = require('./routes/index'),
+    search = require('./routes/search'),
+    store = require('./routes/store');
+
+
+
 
 // Configuration
 const PORT = 3000;
@@ -35,11 +40,11 @@ app.configure('production', function(){
 
 // Routes
 
-app.get('/', routes.index);
-app.post('/auth', routes.auth(AUDIENCE));
-app.get('/logout', routes.logout);
-app.get('/store', routes.store);
-app.get('/search', routes.search);
+app.get('/', index.index);
+app.post('/auth', index.auth(AUDIENCE));
+app.get('/logout', index.logout);
+app.get('/store', store.store);
+app.get('/search', search.search);
 
 var server = http.createServer(app);
 server.listen(PORT, function() {
