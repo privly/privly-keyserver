@@ -32,7 +32,7 @@ exports.store = function (req, resp){
       bia = value.data[0]['bia'];
 
       // Store under pgp
-      console.log('Verifying pgp signature to bia pubkey');
+      //console.log('Verifying pgp signature to bia pubkey');
       helpers.verify_sig(pgp_key, bia, function(verified){
         if(verified){
           //console.log('Signatured verified!');
