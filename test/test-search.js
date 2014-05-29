@@ -30,7 +30,7 @@ describe('Search', function(){
       .get('/search?email=no@no.no')
       .end(function(err, res){
         if(err){
-          throw err;
+          done(err);
         }
         res.should.have.status(404 || 200);
         done();
