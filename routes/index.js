@@ -16,14 +16,14 @@ exports.index = function(req, resp){
 exports.auth = function (audience){
 
   return function(req, resp){
-    console.info('verifying with persona');
+    //console.info('verifying with persona');
 
     var assertion = req.body.assertion;
 
     verify(assertion, audience, function(err, email, data){
       if (err) {
         // return JSON with a 500 saying something went wrong
-        console.warn('request to verifier failed : ' + err);
+        //console.warn('request to verifier failed : ' + err);
         return resp.send(500, { status: 'failure', reason : '' + err });
       }
 
@@ -36,7 +36,7 @@ exports.auth = function (audience){
         resp.send(403, data);
       }
 
-      console.info('browserid auth successful, setting req.session.email');
+      //console.info('browserid auth successful, setting req.session.email');
       req.session.email = email;
 
       // extract email from bia
@@ -59,7 +59,7 @@ exports.auth = function (audience){
         var value = which_store(reply, 'bia', req.body.assertion);
 
         if(!value){
-          console.log('Stored incorrect record');
+          //console.log('Stored incorrect record');
           return resp.send(500, {status: 'Server stored incorrect record'});
         }
 
@@ -71,19 +71,19 @@ exports.auth = function (audience){
           var bia = value.data[0]['bia'];
           helpers.verify_sig(pgp_key, bia, function(verified){
             if(verified){
-              console.log('Signatured verified!');
-              console.log('Storing under pgp');
+              //console.log('Signatured verified!');
+              //console.log('Storing under pgp');
               client.set(pgp_key, JSON.stringify(value.data));
             } else {
-              console.log('pgp signature does not match bia pub key');
-              console.log('deleting offending pgp key');
+              //console.log('pgp signature does not match bia pub key');
+              //console.log('deleting offending pgp key');
               delete value.data[0]['pgp'];
-              console.log('Storing under email');
+              //console.log('Storing under email');
               client.set(email_key, JSON.stringify(value.data));
             }
           });
         } else {
-          console.log('Storing under email');
+          //console.log('Storing under email');
           client.set(email_key, JSON.stringify(value.data));
         }
       });
