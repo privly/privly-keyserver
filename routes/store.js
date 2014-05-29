@@ -9,7 +9,7 @@ exports.store = function (req, resp){
   var bia;
 
   if(!helpers.verify_store_args(req.query)){
-    console.log('invalid query');
+    //console.log('invalid query');
     return resp.send(400, {status: 'invalid query'});
   }
 
@@ -35,22 +35,22 @@ exports.store = function (req, resp){
       console.log('Verifying pgp signature to bia pubkey');
       helpers.verify_sig(pgp_key, bia, function(verified){
         if(verified){
-          console.log('Signatured verified!');
-          console.log('Storing under pgp');
+          //console.log('Signatured verified!');
+          //console.log('Storing under pgp');
           client.set(pgp_key, JSON.stringify(value.data));
           client.set(email_key, JSON.stringify(value.data));
         } else {
-          console.log('pgp signature does not match bia pub key');
+          //console.log('pgp signature does not match bia pub key');
           // delete the pgp key sing which_store will add it
           delete value.data[0]['pgp'];
-          console.log('Storing under email');
+          //console.log('Storing under email');
           client.set(email_key, JSON.stringify(value.data));
         }
         return resp.send(200, {status: 'records updated'});
       });
     } else {
       // Store under email
-      console.log('storing under email');
+      //console.log('storing under email');
       client.set(email_key, JSON.stringify(value.data));
       return resp.send(200, {status: 'records updated'});
     }
