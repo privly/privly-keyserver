@@ -18,7 +18,7 @@ exports.search = function (req, resp){
 
   client.get(key, function(err, reply){
     if(!reply){
-      console.log('reply is null');
+      //console.log('reply is null');
       return resp.send(404, {status: 'key not found'});
     }
     var value = JSON.parse(reply);
