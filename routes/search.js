@@ -24,7 +24,7 @@ exports.search = function (req, resp){
     var value = JSON.parse(reply);
 
     if(value[0].hasOwnProperty('bia') && value[0].hasOwnProperty('pgp')){
-      console.log('latest record is matched');
+      //console.log('latest record is matched');
       return resp.send(200, value);
     }
     // The record list from the key-value store should *never* have
