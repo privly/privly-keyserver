@@ -45,7 +45,7 @@ describe('Helper Functions', function(){
       assert.equal(false, helpers.verify_search_query(query));
     });
 
-    it('should not accept should not accept multiple values for key email', function(){
+    it('should not accept multiple values for key email', function(){
       var query = {
                     email: ['no@no.no', 'yes@yes.yes']
                   };
