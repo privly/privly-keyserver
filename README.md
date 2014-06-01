@@ -54,10 +54,11 @@ email=<validly formatted email>
 pgp=<signed pgp public key>
 ```
 
-If anything more or less than email and pgp are sent as keys, the dirp will
-return an ```HTTP 400``` error code. The same response will be sent if more than
-one (1) value is associated for a key. If an incorrectly formatted email is sent
-to the dirp, it will return an ```HTTP 400``` error code.
+If anything more or less than ```email``` and ```pgp``` are sent as keys, the
+dirp will return an ```HTTP 400``` error code. The same response will be sent
+if more than one (1) value is associated for a key. If an incorrectly
+formatted email is sent to the dirp, it will return an ```HTTP 400``` error
+code.
 
 Bad Example:
 
