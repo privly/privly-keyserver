@@ -54,6 +54,5 @@ exports.store = function (req, resp){
       client.set(email_key, JSON.stringify(value.data));
       return resp.send(200, {status: 'records updated'});
     }
-    //return resp.send(200, {status: 'records updated'});
   });
 };

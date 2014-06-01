@@ -39,7 +39,7 @@ exports.auth = function (audience){
       //console.info('browserid auth successful, setting req.session.email');
       req.session.email = email;
 
-      // extract email from bia
+      // extract user certificate from bia
       var cert = helpers.get_cert_ia(req.body.assertion);
 
       // Verify the extraction returned something
@@ -47,12 +47,14 @@ exports.auth = function (audience){
         return resp.send(500, {status: 'Incorrect backed identity assertion'});
       }
 
+      // extract email from user cert
       var email_key = cert.principal.email
 
       if(!validator.isEmail(email_key)){
         return resp.send(500, {status: 'Incorrect email from bia'});
       }
 
+      // get value associated with email from key-value store
       client.get(email_key, function(err, reply){
 
         // Get updated list of records

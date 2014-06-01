@@ -4,6 +4,11 @@ var jwcrypto = require("jwcrypto"),
 require("jwcrypto/lib/algs/ds");
 require("jwcrypto/lib/algs/rs");
 
+  /**
+   * Extract USer Certificate from Backed Identity Assertion
+   *
+   *  @param {bia} undeocded backed identity assertion.
+  **/
 
 exports.get_cert_ia = function(bia){
   // Begin breaking down the backed identity assertion in order to extract
@@ -16,7 +21,7 @@ exports.get_cert_ia = function(bia){
     bia = bia.replace('~', '.');
     bia = bia.split('.');
   } catch (e) {
-    // Handle incorrect backed indentity assertion format.
+    // Handle incorrect backed identity assertion format.
     // It should not error out unless Persona has changed
     // their backed identity assertion format
     //console.log(e); // Do something with the error
@@ -29,11 +34,11 @@ exports.get_cert_ia = function(bia){
   } catch (e) {
     // Do something with this error
     //console.log('Not a valid base64 encoded backed identity assertion');
-    //consoel.log(e);
+    //console.log(e);
     return false;
   }
 
-  // Get the decoded cert into a useable form.
+  // Get the decoded cert into a usable form.
   try{
   cert = JSON.parse(cert);
   } catch (e) {
@@ -44,14 +49,18 @@ exports.get_cert_ia = function(bia){
   return cert;
 };
 
-exports.verify_search_query = function(query){
-  var keys = 0;
-  var email_key;
-  var email_eq;
-  var pgp_key;
-  var pgp_eq;
+  /**
+   * Verify search query keys/string
+   *
+   *  @param {query} search endpoint query string
+  **/
 
-  //
+exports.verify_search_query = function(query){
+
+  var keys = 0;
+
+  // Count the number of keys in the query
+  // Should be *ONLY* 1 key.
   for(var key in query){
     keys++;
   }
@@ -64,12 +73,12 @@ exports.verify_search_query = function(query){
   if(query.hasOwnProperty('email')){
     //console.log('Searching for email');
 
-    email_key = query.email;
+    var email_key = query.email;
 
     // Check if only one value given for email key
     // Multiple values for email key has type of 'object' whereas
     // a single value for email key has typeof 'string'
-    email_eq = typeof query.email === 'string';
+    var email_eq = typeof query.email === 'string';
 
     if(!email_eq){
       //console.log('More than one value sent for email key');
@@ -86,12 +95,12 @@ exports.verify_search_query = function(query){
   if(query.hasOwnProperty('pgp')){
     //console.log('Searching for pgp');
 
-    pgp_key = query.pgp;
+    var pgp_key = query.pgp;
 
     // Check if only one value given for email key
     // Multiple values for email key has type of 'object' whereas
     // a single value for email key has typeof 'string'
-    pgp_eq = typeof query.pgp === 'string';
+    var pgp_eq = typeof query.pgp === 'string';
 
     if(!pgp_eq){
       //console.log('More than one value sent for pgp key');
@@ -104,10 +113,31 @@ exports.verify_search_query = function(query){
   return null;
 };
 
+  /**
+   * Figure out wether storing values under just email key
+   * or storing values under pgp key also
+   *
+   *  @param {data} Stringified data extracted from the key-value store
+   *  @param {key} What type of value to store ('bia' or 'pgp')
+   *  @param {value} The bia or pgp public key to store.
+   *
+   * Possible outcomes:
+   *  | BIA | PGP | Outcome                                               |
+   *  |  0  |  0  | Invalid data stored, return null                      |
+   *  |  0  |  1  | Create new record with pgp or overwrite unmatched pgp |
+   *  |  1  |  0  | Create new record with bia or overwrite unmatched bia |
+   *  |  1  |  1  | Match bia to pgp                                      |
+   *
+   * Returns: null or an object containing the new list records to store
+   *          in the key-value store and whether a pgp key was matched to
+   *          a bia.
+  **/
+
 exports.which_store = function(data, key, value){
   var to_store;
   var matched = false;
 
+  // Check if data from key-value store is empty
   if(!data){
     //console.log('Email not found in storage, creating new record');
     to_store = {};
@@ -128,7 +158,8 @@ exports.which_store = function(data, key, value){
         to_store = {};
         to_store[key] = value;
 
-        data.unshift(to_store); // add to beginning of list
+        // add to beginning of list
+        data.unshift(to_store);
       } else {
         temp[key] = value;
         if(key == 'pgp'){
@@ -158,11 +189,15 @@ exports.which_store = function(data, key, value){
   return {'data': data, 'matched': matched};
 };
 
+
+  /**
+   * Verify store query keys/string
+   *
+   *  @param {query} store endpoint query string
+  **/
 exports.verify_store_args = function(args){
 
   var keys = 0;
-  var email_eq;
-  var pgp_eq;
 
   // Verify only 2 query keys were sent
   for(var key in args){
@@ -182,11 +217,11 @@ exports.verify_store_args = function(args){
   // Check if only one value given for email key and one value for pgp
   // Multiple values for email key has type of 'object' whereas
   // a single value for email key has typeof 'string'. Same for pgp key
-  email_key = args.email;
-  pgp_key = args.pgp;
+  var email_key = args.email;
+  var pgp_key = args.pgp;
 
-  email_eq = typeof email_key === 'string';
-  pgp_eq = typeof pgp_key === 'string';
+  var email_eq = typeof email_key === 'string';
+  var pgp_eq = typeof pgp_key === 'string';
 
   if(!email_eq || !pgp_eq){
     //console.log('More than one value for a key sent');
@@ -199,24 +234,31 @@ exports.verify_store_args = function(args){
     return false;
   }
 
-  // the store aguments are valid
+  // the store arguments are valid
   return true;
 };
 
+  /**
+   * Verify pgp public signed by the person private key
+   *
+   *  @param {pgp_sig} pgp pubic key signed by persona private key
+   *  @param {bia} undecoded backed identity assertion
+   *  @param {function} callback function to be ran after jwcrypto signature verify
+  **/
 exports.verify_sig = function(pgp_sig, bia, callback){
 
-  var cert;
-  var bia_pub_key;
-
-  cert = helpers.get_cert_ia(bia);
+  // extract user certificate from bia
+  var cert = helpers.get_cert_ia(bia);
 
   if(!cert){
     //console.log('error getting user cert from bia');
     callback(false);
   } else {
 
-    bia_pub_key = cert['public-key'];
+    // Load public key from user certificate (String form)
+    var bia_pub_key = cert['public-key'];
 
+    // load public key into a usable for for jwcrypto
     bia_pub_key = jwcrypto.loadPublicKey(JSON.stringify(bia_pub_key));
 
     jwcrypto.verify(pgp_sig, bia_pub_key, function(err, payload){
