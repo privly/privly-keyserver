@@ -1,12 +1,12 @@
 {
   "author": "Geoffrey Corey <geoffcorey7@gmail.com>",
-  "name": "express-directory-provider",
-  "description": "Experimental reference Directory Provider implementation for Privly",
+  "name": "Privly Keyserver",
+  "description": "Experimental Privly Key Server Implementation",
   "version": "0.0.1",
-  "homepage": "https://github.com/stumped2/express-directory-provider",
+  "homepage": "https://github.com/privly/privly-keyserver",
   "repository": {
     "type": "git",
-    "url": "https://github.com/stumped2/express-directory-provider.git"
+    "url": "https://github.com/privly/privly-keyserver.git"
   },
   "engines": {
     "node": "~0.6.10"
