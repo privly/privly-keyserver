@@ -10,7 +10,7 @@ var helpers = require('../helpers');
  */
 
 exports.index = function(req, resp){
-  resp.render('index', { title: 'Privly Directory Provider', user: req.session.email, csrf: req.session._csrf})
+  resp.render('index', { title: 'Privly Key Server', user: req.session.email, csrf: req.session._csrf})
 };
 
 exports.auth = function (audience){
