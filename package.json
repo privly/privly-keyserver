@@ -1,12 +1,12 @@
 {
-  "author": "Austin King <shout@ozten.com> (http://ozten.com)",
-  "name": "browserid-cookbook-express",
-  "description": "Simplest Express app that uses BrowserID",
-  "version": "0.0.0",
-  "homepage": "http://github.com/mozilla/browserid-cookbook",
+  "author": "Geoffrey Corey <geoffcorey7@gmail.com>",
+  "name": "express-directory-provider",
+  "description": "Experimental reference Directory Provider implementation for Privly",
+  "version": "0.0.1",
+  "homepage": "https://github.com/stumped2/express-directory-provider",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mozilla/browserid-cookbook.git"
+    "url": "https://github.com/stumped2/express-directory-provider.git"
   },
   "engines": {
     "node": "~0.6.10"
