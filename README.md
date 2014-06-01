@@ -1,10 +1,11 @@
 # Installation
 1. [Setup Redis](http://redis.io/topics/quickstart)
 1. Install ```node```
-1. git clone https://github.com/stumped2/express-directory-provider.git
-1. cd express-directory-provider/
+1. Clone the repo
+1. cd into the repo
 1. ```npm install```
 1. ```node app.js```
+1. Default url: ```http://localhost:3000```
 
 # What is a Directory Provider?
 A Directory Provider (dirp) is a remote resource used for the Privly PGP
@@ -55,7 +56,8 @@ pgp=<signed pgp public key>
 
 If anything more or less than email and pgp are sent as keys, the dirp will
 return an ```HTTP 400``` error code. The same response will be sent if more than
-one (1) value is associated for a key.
+one (1) value is associated for a key. If an incorrectly formatted email is sent
+to the dirp, it will return an ```HTTP 400``` error code.
 
 Bad Example:
 
@@ -65,15 +67,38 @@ email=<email2>
 pgp=<signed pgp public key>
 ```
 
-CURL Example:
+Valid CURL Example:
 
 ```bash
 curl --request GET 'http://<dirp url>/store?email=bob@example.com&pgp=dsfdsfds'
 ```
 
 #### search
+The search endpoint is used to search for PGP public keys associated with the
+user's email. The format for this endpoint expects one (1) key with one (1)
+value for the key. Valid query keys are ```email``` OR ```pgp```.
+If any keys other than ```pgp``` OR ```email``` are sent to this endpoint, the
+dirp will return an ```HTTP 400``` error code. If more than 1 value is sent for
+the key, the dirp will respond with an ```HTTP 400``` error code. If an
+incorrectly formatted email is used, the dirp will return an ```HTTP 400```
+error code.
 
-http://etherpad.osuosl.org/privly
+If the matched ```email``` being queried or matched pgp public key being queried
+is not found in the dirp's key-value store, the dirp will return an
+```HTTP 404``` error code otherwise it will respond with a list of JSON objects
+for matched PGP public key and bias (See Format section for example).
+
+Bad Example:
+
+```
+email=<email>
+other=<somehting else>
+```
+
+Valid CURL Example:
+
+```bash
+curl --request GET 'http://<dirp url>/search?email=no@no.no'
 
 ## Formats
 There are specific formats for data used in the dirp.
