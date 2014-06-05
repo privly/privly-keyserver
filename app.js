@@ -12,7 +12,7 @@ var express = require('express');
 
 
 // Configuration
-const PORT = 3000;
+const PORT = 5000;
 const AUDIENCE = "http://localhost:" + PORT;
 
 var app = express();
