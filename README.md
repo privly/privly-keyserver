@@ -48,7 +48,8 @@ The interaction with this endpoint will be handled in an application in
 ## API
 There are 2 endpoints that a Directory Provider is required to have: ```store```
 and ```search```. Currently, interaction with these two (2) endpoints is with
-```GET``` requests. This will be changing to ```POST``` requests in the future.
+```GET``` requests. This will be changing to ```POST``` requests in the future
+(see [#69](https://github.com/privly/privly-applications/issues/69)).
 You must also have an index page to facilitate the Persona
 login process.
 
