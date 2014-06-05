@@ -1,4 +1,6 @@
 # What is a Privly Key Server?
+This is a reference implementation for and experimental key server.
+
 A Privly Key Server (keyserver) is a remote resource used for the Privly PGP
 application.
 
@@ -32,10 +34,16 @@ The user then uploads their pgp public key (which has been signed by the user's
 private key that was generated from the persona log in on the user's computer)
 to the keyserver using their email from the Persona log in as the identifier.
 
+The interaction with this endpoint will be handled in an application in
+[privly-applications](https://github.com/privly/privly-applications).
+
 #### Searching
 The user then searches the keyserver (by email or pgp public key) for other
 Privly PGP application users which will then download the pgp public key to be
 used in the message sending or receiving process.
+
+The interaction with this endpoint will be handled in an application in
+[privly-applications](https://github.com/privly/privly-applications).
 
 ## API
 There are 2 endpoints that a Directory Provider is required to have: ```store```
