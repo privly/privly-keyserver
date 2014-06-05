@@ -3,6 +3,8 @@
  */
 
 var http = require('http');
+
+// Setup the endpoints for the key server
 var express = require('express');
     index = require('./routes/index'),
     search = require('./routes/search'),
