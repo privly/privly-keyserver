@@ -13,7 +13,7 @@ through Persona.
 1. cd into the repo
 1. ```npm install```
 1. ```node app.js```
-1. Default url: ```http://localhost:5000```
+1. Default url: ```http://localhost:5000``` (the port is configureable in [app.js](app.js))
 
 ## Usage
 
