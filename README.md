@@ -1,3 +1,11 @@
+# What is a Privly Key Server?
+A Privly Key Server (keyserver) is a remote resource used for the Privly PGP
+application.
+
+The keyserver is used to create the Persona cryptographic keypair used to verify
+identity as well as used in the association of pgp keys to the user verified
+through Persona.
+
 # Installation
 1. [Setup Redis](http://redis.io/topics/quickstart)
 1. Install ```node```
@@ -6,14 +14,6 @@
 1. ```npm install```
 1. ```node app.js```
 1. Default url: ```http://localhost:3000```
-
-# What is a Privly Key Server?
-A Privly Key Server (keyserver) is a remote resource used for the Privly PGP
-application.
-
-The keyserver is used to create the Persona cryptographic keypair used to verify
-identity as well as used in the association of pgp keys to the user verified
-through Persona.
 
 ## Usage
 
