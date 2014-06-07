@@ -162,3 +162,16 @@ an example:
   ....
 ]
 ```
+# Testing
+The Privly key server uses ```mocha``` as its testing library. The
+```devDependencies``` in the ```package.json``` file shows the required node
+libraries used for testing.
+
+### Usage
+The ```Makefile``` assumes that mocha is installed locally in the folder that
+the key server was cloned into. To run all the tests, just type
+```Make test``` and it will run through all the tests defined in the
+```test``` folder. Another option is to use ```npm test``` which will accomplish
+the same thing as the ```Makefile```. To test the individual files, run
+``` make <desired test>```. An example for testing the index page is
+```make index```.
