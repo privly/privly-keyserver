@@ -1,7 +1,7 @@
 var should = require('should');
 var assert = require('assert');
 var request = require('supertest');
-var api = request('http://localhost:3000');
+var api = request('http://localhost:5000');
 var server = require('../app.js');
 var redis = require('redis'),
     client = redis.createClient();
@@ -9,7 +9,7 @@ var redis = require('redis'),
 describe('Search', function(){
 
   before(function(){
-    server.listen(3000);
+    server.listen(5000);
   });
 
   describe('GET /search', function() {
@@ -211,3 +211,4 @@ describe('Search', function(){
     client.end();
   });
 });
+

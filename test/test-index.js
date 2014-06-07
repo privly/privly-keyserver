@@ -1,11 +1,10 @@
 var should = require('should');
 var assert = require('assert');
 var request = require('supertest');
-var api = request('http://localhost:3000');
+var api = request('http://localhost:5000');
 var server = require('../app.js');
 
 describe('Index', function() {
-  var url = 'http://localhost:3000';
 
   before(function(){
     server.listen(3000);
