@@ -27,6 +27,7 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
+  // Change this session secret before putting into production.
   app.use(express.session({ secret: 'your secret here' }));
   app.use(express.csrf());
   app.use(app.router);

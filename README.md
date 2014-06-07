@@ -13,6 +13,7 @@ through Persona.
 1. Install ```node```
 1. Clone the repo
 1. cd into the repo
+1. In production, change session secret in [app.js](app.js)
 1. ```npm install```
 1. ```node app.js```
 1. Default url: ```http://localhost:5000``` (the port is configureable in [app.js](app.js))
