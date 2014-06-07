@@ -9,11 +9,7 @@ var https = require('https'),
     validator = require('validator'),
     redis = require('redis'),
     client = redis.createClient();
-
 var helpers = require('../helpers');
-/*
- * GET home page.
- */
 
 exports.index = function(req, resp){
   resp.render('index', { title: 'Privly Key Server', user: req.session.email, csrf: req.session._csrf})

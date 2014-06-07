@@ -15,8 +15,9 @@ require("jwcrypto/lib/algs/rs");
    * Extract User Certificate from Backed Identity Assertion
    *
    *  @param {bia} undecoded backed identity assertion.
-  **/
-
+   *
+   *  @return {boolean or object}
+   */
 exports.get_cert_ia = function(bia){
   // Begin breaking down the backed identity assertion in order to extract
   // the user certificate portion which will give the email address to be
@@ -28,31 +29,27 @@ exports.get_cert_ia = function(bia){
     bia = bia.replace('~', '.');
     bia = bia.split('.');
   } catch (e) {
-    // Handle incorrect backed identity assertion format.
+    // Incorrect backed identity assertion format.
     // It should not error out unless Persona has changed
     // their backed identity assertion format
-    //console.log(e); // Do something with the error
     return false;
   }
 
   // Base64 decode the user cert
   try {
-    cert = new Buffer(bia[1], 'base64').toString('utf8');
+    var cert = new Buffer(bia[1], 'base64').toString('utf8');
   } catch (e) {
-    // Do something with this error
-    //console.log('Not a valid base64 encoded backed identity assertion');
-    //console.log(e);
+    // Not a valid base64 encoded backed identity assertion
     return false;
   }
 
   // Get the decoded cert into a usable form.
   try{
-  cert = JSON.parse(cert);
+    cert = JSON.parse(cert);
   } catch (e) {
-    //console.log('Not a valid user cert');
+    // Not a valid user cert
     return false;
   }
-
   return cert;
 };
 
@@ -60,8 +57,9 @@ exports.get_cert_ia = function(bia){
    * Verify search query keys/string
    *
    *  @param {query} search endpoint query string
-  **/
-
+   *
+   *  @return {boolean or int}
+   */
 exports.verify_search_query = function(query){
 
   var keys = 0;
@@ -73,50 +71,45 @@ exports.verify_search_query = function(query){
   }
 
   if(keys != 1){
-    //console.log('Invalid number of keys sent');
+    // Invalid number of keys sent
     return false;
   }
 
   if(query.hasOwnProperty('email')){
-    //console.log('Searching for email');
-
     var email_key = query.email;
 
     // Check if only one value given for email key
     // Multiple values for email key has type of 'object' whereas
     // a single value for email key has typeof 'string'
-    var email_eq = typeof query.email === 'string';
+    var email_eq = (typeof query.email) === 'string';
 
     if(!email_eq){
-      //console.log('More than one value sent for email key');
+      // More than one value sent for email key
       return false;
     }
 
     if(!validator.isEmail(email_key)){
-      //console.log('Invalid email format');
+      // Invalid email format
       return false;
     }
     return 1;
   }
 
   if(query.hasOwnProperty('pgp')){
-    //console.log('Searching for pgp');
-
     var pgp_key = query.pgp;
 
     // Check if only one value given for email key
     // Multiple values for email key has type of 'object' whereas
     // a single value for email key has typeof 'string'
-    var pgp_eq = typeof query.pgp === 'string';
+    var pgp_eq = (typeof query.pgp) === 'string';
 
     if(!pgp_eq){
-      //console.log('More than one value sent for pgp key');
+      // More than one value sent for pgp key
       return false;
     }
     return 2;
   }
-
-  //console.log('Invalid key sent');
+  // Invalid key sent
   return null;
 };
 
@@ -128,40 +121,37 @@ exports.verify_search_query = function(query){
    *  @param {key} What type of value to store ('bia' or 'pgp')
    *  @param {value} The bia or pgp public key to store.
    *
+   *  @return {null or object}
+   *
    * Possible outcomes:
    *  | BIA | PGP | Outcome                                               |
    *  |  0  |  0  | Invalid data stored, return null                      |
    *  |  0  |  1  | Create new record with pgp or overwrite unmatched pgp |
    *  |  1  |  0  | Create new record with bia or overwrite unmatched bia |
    *  |  1  |  1  | Match bia to pgp                                      |
-   *
-   * Returns: null or an object containing the new list records to store
-   *          in the key-value store and whether a pgp key was matched to
-   *          a bia.
-  **/
-
+   */
 exports.which_store = function(data, key, value){
   var to_store;
   var matched = false;
 
   // Check if data from key-value store is empty
   if(!data){
-    //console.log('Email not found in storage, creating new record');
+    // Email not found in storage, creating new record
     to_store = {};
     to_store[key] = value;
     data = [to_store];
   } else {
-    //console.log('Email found in storage');
+    // Email found in storage
     data = JSON.parse(data);
     var temp = data[0];
 
     if(temp.hasOwnProperty('bia')){
-      //console.log('bia key exists');
+      // bia key exists
 
       if(temp.hasOwnProperty('pgp')){
-        //console.log('pgp key exists');
+        // pgp key exists
 
-        //console.log('matched record found, creating new record');
+        // matched record found, creating new record
         to_store = {};
         to_store[key] = value;
 
@@ -170,25 +160,22 @@ exports.which_store = function(data, key, value){
       } else {
         temp[key] = value;
         if(key == 'pgp'){
-          //console.log('Matched pgp to bia');
+          // Matched pgp to bia
           matched = true;
-        } else {
-          //console.log('Overwriting unmatched bia');
         }
       }
     } else {
-      //console.log('key "bia" not found');
+      // key "bia" not found
       if(temp.hasOwnProperty('pgp')){
         temp[key] = value;
         if(key == 'bia'){
-          //console.log('Matched bia to pgp');
+          // Matched bia to pgp
           matched = true;
-        } else {
-          //console.log('Overwriting unmatched pgp');
         }
-        data[0] = temp; // explicitly update the record to have new data
+        // explicitly update the record to have new data
+        data[0] = temp;
       } else {
-        //console.log('Server stored invalid data');
+        // Server stored invalid data'
         return null;
       }
     }
@@ -201,7 +188,9 @@ exports.which_store = function(data, key, value){
    * Verify store query keys/string
    *
    *  @param {query} store endpoint query string
-  **/
+   *
+   *  @return {boolean}
+   */
 exports.verify_store_args = function(args){
 
   var keys = 0;
@@ -212,12 +201,12 @@ exports.verify_store_args = function(args){
   }
 
   if(keys != 2){
-    //console.log('Invalid number of keys sent');
+    // Invalid number of keys sent
     return false;
   }
 
   if(!args.hasOwnProperty('email') || !args.hasOwnProperty('pgp')){
-    //console.log('Missing either email key or pgp key');
+    // Missing either email key or pgp key
     return false;
   }
 
@@ -227,17 +216,17 @@ exports.verify_store_args = function(args){
   var email_key = args.email;
   var pgp_key = args.pgp;
 
-  var email_eq = typeof email_key === 'string';
-  var pgp_eq = typeof pgp_key === 'string';
+  var email_eq = (typeof email_key) === 'string';
+  var pgp_eq = (typeof pgp_key) === 'string';
 
   if(!email_eq || !pgp_eq){
-    //console.log('More than one value for a key sent');
+    // More than one value for a key sent
     return  false;
   }
 
   // check email format validity
   if(!validator.isEmail(args.email)){
-    //console.log('invalid email');
+    // invalid email
     return false;
   }
 
@@ -251,14 +240,14 @@ exports.verify_store_args = function(args){
    *  @param {pgp_sig} pgp pubic key signed by persona private key
    *  @param {bia} undecoded backed identity assertion
    *  @param {function} callback function to be ran after jwcrypto signature verify
-  **/
+   */
 exports.verify_sig = function(pgp_sig, bia, callback){
 
   // extract user certificate from bia
   var cert = helpers.get_cert_ia(bia);
 
   if(!cert){
-    //console.log('error getting user cert from bia');
+    // error getting user cert from bia
     callback(false);
   } else {
 
@@ -270,10 +259,8 @@ exports.verify_sig = function(pgp_sig, bia, callback){
 
     jwcrypto.verify(pgp_sig, bia_pub_key, function(err, payload){
       if(err){
-        //console.log(err);
         callback(false);
       } else {
-        //console.log(payload);
         callback(true);
       }
     });
