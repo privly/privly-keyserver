@@ -1,3 +1,10 @@
+/**
+ * @fileOverview Helper functions used by the upload and storage endpoints
+ * to do parameter validation, user certificate extraction, signed pgp public
+ * key verification, and determining how data will be stored.
+ *
+ */
+
 var jwcrypto = require("jwcrypto"),
     helpers = require('./helpers');
     validator = require('validator');

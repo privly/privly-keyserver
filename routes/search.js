@@ -1,3 +1,9 @@
+/**
+ * @fileOverview The search endpoint for the Privly key server, used to query
+ * the key value store by either email of pgp public key.
+ *
+ */
+
 var helpers = require('../helpers'),
     redis = require('redis'),
     client = redis.createClient();

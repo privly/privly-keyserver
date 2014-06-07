@@ -1,3 +1,9 @@
+/**
+ * @fileOverview The store endpoint for the Privly key server, used to upload
+ * a pgp public key.
+ *
+ */
+
 var helpers = require('../helpers'),
     redis = require('redis'),
     client = redis.createClient();

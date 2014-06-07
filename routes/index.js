@@ -1,3 +1,9 @@
+/**
+ * @fileOverview The login page, logout page, and persona login verification
+ * process.
+ *
+ */
+
 var https = require('https'),
     verify = require('browserid-verify')(),
     validator = require('validator'),

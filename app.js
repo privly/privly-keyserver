@@ -1,5 +1,7 @@
 /**
- * Module dependencies.
+ * @fileOverview The Privly key server setup file, describes how to setup the
+ * express js server.
+ *
  */
 
 var http = require('http');
@@ -24,7 +26,7 @@ app.configure(function(){
   app.set('view engine', 'jade');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.cookieParser());
+  app.use(express.cookieParser());s
   app.use(express.session({ secret: 'your secret here' }));
   app.use(express.csrf());
   app.use(app.router);
