@@ -6,7 +6,7 @@
  */
 
 var jwcrypto = require("jwcrypto"),
-    helpers = require('./helpers');
+    helpers = require('./helpers'),
     validator = require('validator');
 require("jwcrypto/lib/algs/ds");
 require("jwcrypto/lib/algs/rs");
@@ -70,7 +70,7 @@ exports.verify_search_query = function(query){
     keys++;
   }
 
-  if(keys != 1){
+  if(keys !== 1){
     // Invalid number of keys sent
     return false;
   }
@@ -81,7 +81,7 @@ exports.verify_search_query = function(query){
     // Check if only one value given for email key
     // Multiple values for email key has type of 'object' whereas
     // a single value for email key has typeof 'string'
-    var email_eq = (typeof query.email) === 'string';
+    var email_eq = (typeof email_key) === 'string';
 
     if(!email_eq){
       // More than one value sent for email key
@@ -101,7 +101,7 @@ exports.verify_search_query = function(query){
     // Check if only one value given for email key
     // Multiple values for email key has type of 'object' whereas
     // a single value for email key has typeof 'string'
-    var pgp_eq = (typeof query.pgp) === 'string';
+    var pgp_eq = (typeof pgp_key) === 'string';
 
     if(!pgp_eq){
       // More than one value sent for pgp key
@@ -159,7 +159,7 @@ exports.which_store = function(data, key, value){
         data.unshift(to_store);
       } else {
         temp[key] = value;
-        if(key == 'pgp'){
+        if(key === 'pgp'){
           // Matched pgp to bia
           matched = true;
         }
@@ -168,7 +168,7 @@ exports.which_store = function(data, key, value){
       // key "bia" not found
       if(temp.hasOwnProperty('pgp')){
         temp[key] = value;
-        if(key == 'bia'){
+        if(key === 'bia'){
           // Matched bia to pgp
           matched = true;
         }
@@ -200,7 +200,7 @@ exports.verify_store_args = function(args){
     keys++;
   }
 
-  if(keys != 2){
+  if(keys !== 2){
     // Invalid number of keys sent
     return false;
   }

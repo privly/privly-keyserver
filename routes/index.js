@@ -12,7 +12,7 @@ var https = require('https'),
 var helpers = require('../helpers');
 
 exports.index = function(req, resp){
-  resp.render('index', { title: 'Privly Key Server', user: req.session.email, csrf: req.session._csrf})
+  resp.render('index', { title: 'Privly Key Server', user: req.session.email, csrf: req.session._csrf});
 };
 
 exports.verify = function (audience){
@@ -60,7 +60,7 @@ exports.verify = function (audience){
       client.get(email_key, function(err, reply){
 
         // Get updated list of records
-        var value = which_store(reply, 'bia', req.body.assertion);
+        var value = helpers.which_store(reply, 'bia', req.body.assertion);
 
         if(!value){
           //console.log('Stored incorrect record');
@@ -71,7 +71,7 @@ exports.verify = function (audience){
 
           // store under pgp
           console.log('Verifying pgp signature to bia pubkey');
-          var pgp_key = value.data[0]['pgp'];
+          var pgp_key = value.data[0].pgp;
           var bia = value.data[0]['bia'];
           helpers.verify_sig(pgp_key, bia, function(verified){
             if(verified){
@@ -81,7 +81,7 @@ exports.verify = function (audience){
             } else {
               //console.log('pgp signature does not match bia pub key');
               //console.log('deleting offending pgp key');
-              delete value.data[0]['pgp'];
+              delete value.data[0].pgp;
               //console.log('Storing under email');
               client.set(email_key, JSON.stringify(value.data));
             }

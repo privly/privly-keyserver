@@ -14,9 +14,9 @@ exports.search = function (req, resp){
 
   var verified = helpers.verify_search_query(req.query);
 
-  if(verified == 1){
+  if(verified === 1){
     key = req.query.email;
-  } else if(verified == 2){
+  } else if(verified === 2){
     key = req.query.pgp;
   } else {
     return resp.send(400, {status: 'invalid query'});

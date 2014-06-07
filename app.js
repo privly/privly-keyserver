@@ -7,7 +7,7 @@
 var http = require('http');
 
 // Setup the endpoints for the key server
-var express = require('express');
+var express = require('express'),
     index = require('./routes/index'),
     search = require('./routes/search'),
     store = require('./routes/store');
@@ -16,8 +16,8 @@ var express = require('express');
 
 
 // Configuration
-const PORT = 5000;
-const AUDIENCE = "http://localhost:" + PORT;
+var PORT = 5000;
+var AUDIENCE = "http://localhost:" + PORT;
 
 var app = express();
 

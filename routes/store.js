@@ -35,7 +35,7 @@ exports.store = function (req, resp){
     // Check if we matched a pgp public key to bia
     if(value.matched){
 
-      bia = value.data[0]['bia'];
+      bia = value.data[0].bia;
 
       // Store under pgp
       //console.log('Verifying pgp signature to bia pubkey');
@@ -48,7 +48,7 @@ exports.store = function (req, resp){
         } else {
           //console.log('pgp signature does not match bia pub key');
           // delete the pgp key sing which_store will add it
-          delete value.data[0]['pgp'];
+          delete value.data[0].pgp;
           //console.log('Storing under email');
           client.set(email_key, JSON.stringify(value.data));
         }
