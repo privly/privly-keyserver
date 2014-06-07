@@ -19,7 +19,7 @@ exports.index = function(req, resp){
   resp.render('index', { title: 'Privly Key Server', user: req.session.email, csrf: req.session._csrf})
 };
 
-exports.auth = function (audience){
+exports.verify = function (audience){
 
   return function(req, resp){
     //console.info('verifying with persona');

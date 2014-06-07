@@ -46,7 +46,7 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', index.index);
-app.post('/auth', index.auth(AUDIENCE));
+app.post('/verify', index.verify(AUDIENCE));
 app.get('/logout', index.logout);
 app.get('/store', store.store);
 app.get('/search', search.search);

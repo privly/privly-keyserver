@@ -4,12 +4,12 @@ html
     meta(http-equiv='X-UA-Compatible', content='IE=Edge')
     title= title
     link(rel='stylesheet', href='/css/style.css')
-  body 
+  body
     nav
       if user
         a#logout(href='javascript:navigator.id.logout()') Logout
       else
-        form(id="login-form", action="/auth", method="POST")
+        form(id="login-form", action="/verify", method="POST")
           input(id="assertion-field", type="hidden", name="assertion", value="")
           input(type="hidden", name="_csrf", value=csrf)
         a#browserid(href='javascript:navigator.id.request()') Sign in
