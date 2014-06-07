@@ -1,7 +1,7 @@
 # What is a Privly Key Server?
 This is a reference implementation for and experimental key server.
 
-A Privly Key Server (keyserver) is a remote resource used for the Privly PGP
+A Privly Key Server (keyserver) is a remote resource used for the [Privly PGP](/irdan/privly-applications/tree/irdan/DirectoryInteraction/README.md)
 application.
 
 The keyserver is used to create the Persona cryptographic keypair used to verify
