@@ -12,9 +12,9 @@ require("jwcrypto/lib/algs/ds");
 require("jwcrypto/lib/algs/rs");
 
   /**
-   * Extract USer Certificate from Backed Identity Assertion
+   * Extract User Certificate from Backed Identity Assertion
    *
-   *  @param {bia} undeocded backed identity assertion.
+   *  @param {bia} undecoded backed identity assertion.
   **/
 
 exports.get_cert_ia = function(bia){
