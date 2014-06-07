@@ -50,7 +50,7 @@ exports.verify = function (audience){
       }
 
       // extract email from user cert
-      var email_key = cert.principal.email
+      var email_key = cert.principal.email;
 
       if(!validator.isEmail(email_key)){
         return resp.send(500, {status: 'Incorrect email from bia'});
@@ -72,7 +72,7 @@ exports.verify = function (audience){
           // store under pgp
           console.log('Verifying pgp signature to bia pubkey');
           var pgp_key = value.data[0].pgp;
-          var bia = value.data[0]['bia'];
+          var bia = value.data[0].bia;
           helpers.verify_sig(pgp_key, bia, function(verified){
             if(verified){
               //console.log('Signatured verified!');

@@ -22,7 +22,6 @@ exports.get_cert_ia = function(bia){
   // Begin breaking down the backed identity assertion in order to extract
   // the user certificate portion which will give the email address to be
   // used as the key in the key-value store.
-  bia = new String(bia);
 
   // Check to make sure it is a Backed Identity Assertion format
   try {
@@ -37,7 +36,7 @@ exports.get_cert_ia = function(bia){
 
   // Base64 decode the user cert
   try {
-    var cert = new Buffer(bia[1], 'base64').toString('utf8');
+    var decoded_bia = new Buffer(bia[1], 'base64').toString('utf8');
   } catch (e) {
     // Not a valid base64 encoded backed identity assertion
     return false;
@@ -45,7 +44,7 @@ exports.get_cert_ia = function(bia){
 
   // Get the decoded cert into a usable form.
   try{
-    cert = JSON.parse(cert);
+    var cert = JSON.parse(decoded_bia);
   } catch (e) {
     // Not a valid user cert
     return false;
