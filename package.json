@@ -1,0 +1,33 @@
+{
+  "author": "Geoffrey Corey <geoffcorey7@gmail.com>",
+  "name": "privly-keyserver",
+  "description": "Experimental Privly Key Server Implementation",
+  "version": "0.0.1",
+  "homepage": "https://github.com/privly/privly-keyserver",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/privly/privly-keyserver.git"
+  },
+  "engines": {
+    "node": "~0.6.10"
+  },
+  "dependencies": {
+    "express": "3.2.x",
+    "jade": "0.31.x",
+    "browserid-verify": "0.1.x",
+    "redis": "0.10.1",
+    "validator": "3.12.0",
+    "jwcrypto": "0.5.0"
+  },
+  "devDependencies": {
+    "mocha": "1.20.0",
+    "should": "3.3.2",
+    "assert": "1.1.1",
+    "supertest": "0.13.0",
+    "request": "2.36.0"
+  },
+  "optionalDependencies": {},
+  "scripts": {
+    "test": "make test"
+  }
+}
