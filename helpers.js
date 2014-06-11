@@ -63,15 +63,11 @@ exports.get_cert_ia = function(bia){
    */
 exports.verify_search_query = function(query){
 
-  var keys = 0;
 
-  // Count the number of keys in the query
+
+  // Get the number of keys in the query
   // Should be *ONLY* 1 key.
-  for(var key in query){
-    keys++;
-  }
-
-  if(keys !== 1){
+  if(Object.keys(query).length !== 1){
     // Invalid number of keys sent
     return false;
   }
@@ -194,14 +190,7 @@ exports.which_store = function(data, key, value){
    */
 exports.verify_store_args = function(args){
 
-  var keys = 0;
-
-  // Verify only 2 query keys were sent
-  for(var key in args){
-    keys++;
-  }
-
-  if(keys !== 2){
+  if(Object.keys(args).length !== 2){
     // Invalid number of keys sent
     return false;
   }
